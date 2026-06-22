@@ -19,8 +19,6 @@ services:
     image: nginx:1.25-alpine
     container_name: azam_nginx
     restart: unless-stopped
-    ports:
-      - "80:80"
     volumes:
       - ./public:/var/www/public:ro
       - ./public/images:/var/www/public/images
@@ -28,8 +26,28 @@ services:
       - storage_data:/var/www/storage:ro
     networks:
       - azam_net
+      - web
     depends_on:
       - app
+    labels:
+      # Activer Traefik pour ce container
+      - "traefik.enable=true"
+      - "traefik.docker.network=web"
+
+      # Routeur principal HTTPS (www)
+      - "traefik.http.routers.azam.rule=Host(`www.azamgroupe.com`)"
+      - "traefik.http.routers.azam.entrypoints=websecure"
+      - "traefik.http.routers.azam.tls.certresolver=letsencrypt"
+      - "traefik.http.services.azam.loadbalancer.server.port=80"
+
+      # Routeur HTTPS non-www → redirect vers www
+      - "traefik.http.routers.azam-nowww.rule=Host(`azamgroupe.com`)"
+      - "traefik.http.routers.azam-nowww.entrypoints=websecure"
+      - "traefik.http.routers.azam-nowww.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.azam-nowww.middlewares=azam-www"
+      - "traefik.http.middlewares.azam-www.redirectregex.regex=^https://azamgroupe\\.com/(.*)"
+      - "traefik.http.middlewares.azam-www.redirectregex.replacement=https://www.azamgroupe.com/$${1}"
+      - "traefik.http.middlewares.azam-www.redirectregex.permanent=true"
 
   db:
     image: mysql:8.0
@@ -53,6 +71,8 @@ services:
 networks:
   azam_net:
     driver: bridge
+  web:
+    external: true   # réseau Traefik déjà existant
 
 volumes:
   db_data:
