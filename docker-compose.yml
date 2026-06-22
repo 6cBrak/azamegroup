@@ -39,6 +39,16 @@ services:
       - "traefik.http.routers.azam.tls.certresolver=letsencrypt"
       - "traefik.http.services.azam.loadbalancer.server.port=80"
 
+      # Redirection HTTP → HTTPS (www)
+      - "traefik.http.routers.azam-http.rule=Host(`www.azamgroupe.com`)"
+      - "traefik.http.routers.azam-http.entrypoints=web"
+      - "traefik.http.routers.azam-http.middlewares=azam-https-redirect"
+
+      # Redirection HTTP → HTTPS (non-www)
+      - "traefik.http.routers.azam-nowww-http.rule=Host(`azamgroupe.com`)"
+      - "traefik.http.routers.azam-nowww-http.entrypoints=web"
+      - "traefik.http.routers.azam-nowww-http.middlewares=azam-https-redirect"
+
       # Routeur HTTPS non-www → redirect vers www
       - "traefik.http.routers.azam-nowww.rule=Host(`azamgroupe.com`)"
       - "traefik.http.routers.azam-nowww.entrypoints=websecure"
@@ -47,6 +57,10 @@ services:
       - "traefik.http.middlewares.azam-www.redirectregex.regex=^https://azamgroupe\\.com/(.*)"
       - "traefik.http.middlewares.azam-www.redirectregex.replacement=https://www.azamgroupe.com/$${1}"
       - "traefik.http.middlewares.azam-www.redirectregex.permanent=true"
+
+      # Middleware HTTP → HTTPS
+      - "traefik.http.middlewares.azam-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.azam-https-redirect.redirectscheme.permanent=true"
 
   db:
     image: mysql:8.0
