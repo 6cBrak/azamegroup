@@ -462,6 +462,35 @@
             </div>
         </div>
 
+        {{-- ══════════════════════════════════════════ --}}
+        {{-- 9. VÉRIFICATION MOTEURS DE RECHERCHE      --}}
+        {{-- ══════════════════════════════════════════ --}}
+        <div class="bg-white rounded-xl shadow p-6">
+            <h2 class="font-bold text-gray-700 text-lg mb-5 flex items-center gap-2">
+                <i class="fas fa-search text-indigo-500"></i> Vérification moteurs de recherche
+            </h2>
+            <p class="text-sm text-gray-500 mb-4">Colle ici les codes fournis par Google Search Console et Bing Webmaster Tools.</p>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        <i class="fab fa-google mr-1 text-red-500"></i> Google Search Console — code de vérification
+                    </label>
+                    <input type="text" name="google_verification" value="{{ $settings['google_verification'] ?? '' }}"
+                           placeholder="Ex: abc123xyz..."
+                           class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <p class="text-xs text-gray-400 mt-1">Depuis Search Console → Ajouter une propriété → Balise HTML → copie uniquement le contenu de content="..."</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        <i class="fab fa-microsoft mr-1 text-blue-500"></i> Bing Webmaster Tools — code de vérification
+                    </label>
+                    <input type="text" name="bing_verification" value="{{ $settings['bing_verification'] ?? '' }}"
+                           placeholder="Ex: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+                           class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+            </div>
+        </div>
+
         <div class="flex justify-end pb-8">
             <button type="submit"
                     class="bg-indigo-600 text-white font-bold px-10 py-3 rounded-xl hover:bg-indigo-700 transition flex items-center gap-2 text-base">

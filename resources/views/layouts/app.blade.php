@@ -7,8 +7,15 @@
     {{-- SEO --}}
     <title>@yield('title', __('app.site_name') . ' - ' . __('app.tagline'))</title>
     <meta name="description" content="@yield('meta_description', __('app.tagline'))">
-    <meta name="keywords"    content="@yield('meta_keywords', 'boutique en ligne, acheter en ligne, Algérie, livraison')">
-    <link rel="canonical"   href="{{ url()->current() }}">
+    <meta name="keywords"    content="@yield('meta_keywords', 'matériaux construction Ouagadougou, énergie solaire Burkina Faso, sourcing import Afrique, AZAM GROUP')">
+    <meta name="robots"      content="index, follow">
+    <meta name="author"      content="AZAM GROUP">
+    <link rel="canonical"    href="{{ url()->current() }}">
+
+    {{-- Hreflang bilingue FR/EN --}}
+    <link rel="alternate" hreflang="fr"      href="{{ url()->current() }}">
+    <link rel="alternate" hreflang="en"      href="{{ url()->current() }}">
+    <link rel="alternate" hreflang="x-default" href="{{ url('/') }}">
 
     {{-- Open Graph --}}
     <meta property="og:type"        content="@yield('og_type', 'website')">
@@ -17,7 +24,7 @@
     <meta property="og:url"         content="{{ url()->current() }}">
     <meta property="og:image"       content="@yield('og_image', asset('images/og-default.jpg'))">
     <meta property="og:site_name"   content="{{ __('app.site_name') }}">
-    <meta property="og:locale"      content="{{ app()->getLocale() === 'fr' ? 'fr_FR' : 'en_US' }}">
+    <meta property="og:locale"      content="{{ app()->getLocale() === 'fr' ? 'fr_BF' : 'en_US' }}">
 
     {{-- Twitter Card --}}
     <meta name="twitter:card"        content="summary_large_image">
@@ -25,29 +32,49 @@
     <meta name="twitter:description" content="@yield('meta_description', __('app.tagline'))">
     <meta name="twitter:image"       content="@yield('og_image', asset('images/og-default.jpg'))">
 
-    {{-- Schema.org --}}
+    {{-- Vérification Google / Bing (configurable depuis /admin/parametres) --}}
     @php use App\Models\Setting; @endphp
+    @if(Setting::get('google_verification'))
+    <meta name="google-site-verification" content="{{ Setting::get('google_verification') }}">
+    @endif
+    @if(Setting::get('bing_verification'))
+    <meta name="msvalidate.01" content="{{ Setting::get('bing_verification') }}">
+    @endif
+
+    {{-- Schema.org LocalBusiness --}}
     <script type="application/ld+json">
     {
         "@@context": "https://schema.org",
-        "@@type": "Organization",
-        "name": "{{ __('app.site_name') }}",
+        "@@type": "LocalBusiness",
+        "name": "{{ Setting::get('site_name', 'AZAM GROUP') }}",
+        "description": "{{ Str::limit(Setting::get('company_intro', ''), 160) }}",
         "url": "{{ url('/') }}",
         "logo": "{{ asset('images/logo.png') }}",
-        "contactPoint": {
-            "@@type": "ContactPoint",
-            "telephone": "{{ Setting::get('contact_phone') }}",
-            "contactType": "customer service",
-            "availableLanguage": ["French", "Arabic"]
-        },
+        "image": "{{ asset('images/og-default.jpg') }}",
+        "telephone": "{{ Setting::get('contact_phone') }}",
+        "email": "{{ Setting::get('contact_email') }}",
         "address": {
             "@@type": "PostalAddress",
-            "addressLocality": "{{ Setting::get('contact_city', 'Alger') }}",
-            "addressCountry": "DZ"
+            "streetAddress": "{{ Setting::get('contact_address', 'Cité an 2, rue 6.40') }}",
+            "addressLocality": "{{ Setting::get('contact_city', 'Ouagadougou') }}",
+            "addressCountry": "BF"
+        },
+        "openingHoursSpecification": {
+            "@@type": "OpeningHoursSpecification",
+            "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"],
+            "opens": "08:00",
+            "closes": "18:00"
+        },
+        "contactPoint": {
+            "@@type": "ContactPoint",
+            "telephone": "{{ Setting::get('whatsapp_number') }}",
+            "contactType": "customer service",
+            "availableLanguage": ["French", "English"]
         },
         "sameAs": [
-            "{{ Setting::get('social_facebook') }}",
-            "{{ Setting::get('social_instagram') }}"
+            @if(Setting::get('social_facebook'))"{{ Setting::get('social_facebook') }}"@endif
+            @if(Setting::get('social_facebook') && Setting::get('social_instagram')),@endif
+            @if(Setting::get('social_instagram'))"{{ Setting::get('social_instagram') }}"@endif
         ]
     }
     </script>
