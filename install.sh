@@ -2,10 +2,10 @@
 # ============================================================
 #  AZAM GROUP — Script d'installation automatique VPS
 #  Usage : bash install.sh
+#  Testé : Ubuntu 24.04, Docker 29.x, Docker Compose v5.x
 # ============================================================
 set -e
 
-# ── Couleurs ────────────────────────────────────────────────
 RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'
 BLUE='\033[0;34m'; BOLD='\033[1m'; NC='\033[0m'
 
@@ -15,7 +15,6 @@ warn()    { echo -e "${YELLOW}[WARN]${NC}  $1"; }
 error()   { echo -e "${RED}[ERREUR]${NC} $1"; exit 1; }
 title()   { echo -e "\n${BOLD}${BLUE}==> $1${NC}"; }
 
-# ── Bannière ────────────────────────────────────────────────
 echo -e "${BOLD}"
 echo "  ╔══════════════════════════════════════╗"
 echo "  ║     AZAM GROUP — Installation        ║"
@@ -23,31 +22,42 @@ echo "  ║     Laravel 12 + Docker + Traefik    ║"
 echo "  ╚══════════════════════════════════════╝"
 echo -e "${NC}"
 
-# ── Vérifications ───────────────────────────────────────────
+# ── Vérifications ────────────────────────────────────────────
 title "Vérification de l'environnement"
 
 [ "$EUID" -ne 0 ] && error "Lance ce script en root : sudo bash install.sh"
+command -v docker >/dev/null 2>&1 || error "Docker n'est pas installé."
+command -v git    >/dev/null 2>&1 || error "Git n'est pas installé."
 
-command -v docker  >/dev/null 2>&1 || error "Docker n'est pas installé."
-command -v git     >/dev/null 2>&1 || error "Git n'est pas installé."
 success "Docker $(docker --version | awk '{print $3}' | tr -d ',')"
+success "Docker Compose $(docker compose version | awk '{print $NF}')"
 success "Git $(git --version | awk '{print $3}')"
 
-# ── Configuration interactive ────────────────────────────────
+# Vérifier que le réseau Traefik 'web' existe
+docker network inspect web >/dev/null 2>&1 \
+    && success "Réseau Traefik 'web' détecté." \
+    || error "Le réseau Docker 'web' est introuvable. Assure-toi que Traefik est démarré."
+
+# Vérifier que Traefik tourne
+docker ps --format '{{.Names}}' | grep -q traefik \
+    && success "Traefik est en cours d'exécution." \
+    || warn "Aucun container Traefik détecté — le SSL ne fonctionnera pas."
+
+# ── Configuration interactive ─────────────────────────────────
 title "Configuration"
 
-read -p "  Domaine principal (ex: www.azamgroupe.com) : " DOMAIN
+read -p "  Domaine principal        (ex: www.azamgroupe.com) : " DOMAIN
 [ -z "$DOMAIN" ] && error "Le domaine est obligatoire."
 
-read -p "  Domaine sans www (ex: azamgroupe.com)     : " DOMAIN_BARE
-[ -z "$DOMAIN_BARE" ] && DOMAIN_BARE="${DOMAIN#www.}"
+# Auto-déduire le bare domain
+DEFAULT_BARE="${DOMAIN#www.}"
+read -p "  Domaine sans www         (défaut: $DEFAULT_BARE) : " DOMAIN_BARE
+[ -z "$DOMAIN_BARE" ] && DOMAIN_BARE="$DEFAULT_BARE"
 
 echo ""
-read -s -p "  Mot de passe base de données (fort) : " DB_PASS
-echo ""
-[ -z "$DB_PASS" ] && error "Le mot de passe DB est obligatoire."
-read -s -p "  Confirmer le mot de passe            : " DB_PASS2
-echo ""
+read -s -p "  Mot de passe base de données (fort, min 12 car.) : " DB_PASS; echo ""
+[ ${#DB_PASS} -lt 8 ] && error "Mot de passe trop court (minimum 8 caractères)."
+read -s -p "  Confirmer le mot de passe                        : " DB_PASS2; echo ""
 [ "$DB_PASS" != "$DB_PASS2" ] && error "Les mots de passe ne correspondent pas."
 
 INSTALL_DIR="/opt/azamgroupe"
@@ -61,17 +71,7 @@ echo ""
 read -p "  Confirmer et lancer l'installation ? [o/N] : " CONFIRM
 [[ ! "$CONFIRM" =~ ^[oO]$ ]] && { echo "Annulé."; exit 0; }
 
-# ── Réseau Traefik ───────────────────────────────────────────
-title "Réseau Docker 'web' (Traefik)"
-
-if docker network inspect web >/dev/null 2>&1; then
-    success "Réseau 'web' déjà existant."
-else
-    docker network create web
-    success "Réseau 'web' créé."
-fi
-
-# ── Clonage ─────────────────────────────────────────────────
+# ── Clonage ──────────────────────────────────────────────────
 title "Clonage du dépôt"
 
 if [ -d "$INSTALL_DIR/.git" ]; then
@@ -82,7 +82,7 @@ else
 fi
 success "Code source prêt dans $INSTALL_DIR"
 
-# ── Génération APP_KEY ───────────────────────────────────────
+# ── Génération APP_KEY ────────────────────────────────────────
 APP_KEY="base64:$(openssl rand -base64 32)"
 
 # ── Création du .env ─────────────────────────────────────────
@@ -114,50 +114,44 @@ MAIL_MAILER=log
 FILESYSTEM_DISK=public
 EOF
 
-success ".env créé avec APP_KEY générée automatiquement."
+success ".env créé (APP_KEY générée automatiquement)."
 
-# ── Mise à jour labels Traefik selon domaine saisi ───────────
-title "Configuration des labels Traefik"
+# ── Patch domaine dans docker-compose.yml ─────────────────────
+title "Configuration des domaines Traefik"
 
 COMPOSE_FILE="$INSTALL_DIR/docker-compose.yml"
+sed -i "s/www\.azamgroupe\.com/${DOMAIN}/g"     "$COMPOSE_FILE"
+sed -i "s/azamgroupe\.com/${DOMAIN_BARE}/g"      "$COMPOSE_FILE"
+success "Labels Traefik mis à jour : $DOMAIN / $DOMAIN_BARE"
 
-# Remplacer le domaine www
-sed -i "s/www\.azamgroupe\.com/${DOMAIN}/g" "$COMPOSE_FILE"
-# Remplacer le domaine bare
-sed -i "s/azamgroupe\.com/${DOMAIN_BARE}/g" "$COMPOSE_FILE"
-
-success "Domaine $DOMAIN configuré dans docker-compose.yml"
-
-# ── Build & démarrage ────────────────────────────────────────
+# ── Build & démarrage ─────────────────────────────────────────
 title "Build de l'image Docker"
-
 cd "$INSTALL_DIR"
 docker compose build --no-cache app
-success "Image construite."
+success "Image PHP-FPM construite."
 
 title "Démarrage des containers"
 docker compose up -d
-success "Containers démarrés."
+success "Containers démarrés (azam_app, azam_nginx, azam_db)."
 
-# ── Attente MySQL ────────────────────────────────────────────
+# ── Attente MySQL ─────────────────────────────────────────────
 title "Attente que MySQL soit prêt..."
 
 MAX=30; COUNT=0
 until docker compose exec -T db mysqladmin ping -h localhost -u root -p"${DB_PASS}" --silent 2>/dev/null; do
     COUNT=$((COUNT+1))
     [ $COUNT -ge $MAX ] && error "MySQL ne répond pas après ${MAX} tentatives."
-    echo -n "."
-    sleep 3
+    echo -n "."; sleep 3
 done
 echo ""
 success "MySQL prêt."
 
-# ── Laravel setup ────────────────────────────────────────────
+# ── Laravel setup ─────────────────────────────────────────────
 title "Migrations"
 docker compose exec -T app php artisan migrate --force
 success "Migrations exécutées."
 
-title "Seeder (catégories, produits, admin)"
+title "Seeder (catégories, produits, compte admin)"
 docker compose exec -T app php artisan db:seed --force
 success "Données initiales insérées."
 
@@ -173,24 +167,27 @@ docker compose exec -T app chown -R www-data:www-data /var/www/storage
 docker compose exec -T app chmod -R 775 /var/www/storage
 success "Permissions OK."
 
-# ── Résumé final ─────────────────────────────────────────────
+# ── Résumé ────────────────────────────────────────────────────
 echo ""
 echo -e "${BOLD}${GREEN}"
-echo "  ╔══════════════════════════════════════════════════╗"
-echo "  ║           Installation terminée !               ║"
-echo "  ╠══════════════════════════════════════════════════╣"
-echo -e "  ║  Site      : https://${DOMAIN}$(printf '%*s' $((40 - ${#DOMAIN})) '')║"
-echo "  ║  Admin     : https://${DOMAIN}/admin            "
-echo "  ║  Email     : admin@azamgroupe.com               ║"
-echo "  ║  MDP admin : Admin@2024  ← CHANGER MAINTENANT  ║"
-echo "  ╠══════════════════════════════════════════════════╣"
-echo "  ║  Commandes utiles :                             ║"
-echo "  ║   docker compose logs -f          (logs live)  ║"
-echo "  ║   docker compose restart          (redémarrer) ║"
-echo "  ║   cd $INSTALL_DIR && git pull (màj code)       ║"
-echo "  ║   ./deploy.sh                    (redéployer)  ║"
-echo "  ╚══════════════════════════════════════════════════╝"
+echo "  ╔════════════════════════════════════════════════════╗"
+echo "  ║            Installation terminée !                ║"
+echo "  ╠════════════════════════════════════════════════════╣"
+echo "  ║  Site    : https://${DOMAIN}"
+echo "  ║  Admin   : https://${DOMAIN}/admin"
+echo "  ║  Email   : admin@azamgroupe.com"
+echo "  ║  MDP     : Admin@2024  ← CHANGER MAINTENANT !"
+echo "  ╠════════════════════════════════════════════════════╣"
+echo "  ║  Containers actifs :"
+echo "  ║    azam_app    — PHP 8.2-FPM (Laravel)"
+echo "  ║    azam_nginx  — Nginx (servi via Traefik)"
+echo "  ║    azam_db     — MySQL 8.0"
+echo "  ╠════════════════════════════════════════════════════╣"
+echo "  ║  Commandes utiles :"
+echo "  ║    docker compose -f $INSTALL_DIR/docker-compose.yml logs -f"
+echo "  ║    cd $INSTALL_DIR && ./deploy.sh   (mise à jour)"
+echo "  ╚════════════════════════════════════════════════════╝"
 echo -e "${NC}"
-echo -e "${YELLOW}  ⚠  Assure-toi que les DNS de ${DOMAIN} pointent vers ce serveur.${NC}"
-echo -e "${YELLOW}  ⚠  Change le mot de passe admin sur /admin dès la première connexion.${NC}"
+echo -e "${YELLOW}  ⚠  DNS : pointe ${DOMAIN} et ${DOMAIN_BARE} vers ce serveur.${NC}"
+echo -e "${YELLOW}  ⚠  Change le mot de passe admin sur /admin dès la 1ère connexion.${NC}"
 echo ""
