@@ -18,6 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->redirectGuestsTo(fn () => route('admin.login'));
         $middleware->alias([
             'customer.auth' => \App\Http\Middleware\CustomerAuth::class,
+            'require.admin' => \App\Http\Middleware\RequireAdmin::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

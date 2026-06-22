@@ -82,9 +82,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('categories', CategoryController::class)->names('categories');
         Route::resource('orders', OrderController::class)->names('orders')->only(['index', 'show', 'update', 'destroy']);
 
-        Route::get('settings', [SettingController::class, 'index'])->name('settings.index');
-        Route::put('settings', [SettingController::class, 'update'])->name('settings.update');
-
         Route::get('contact-messages', [ContactMessageController::class, 'index'])->name('contact-messages.index');
         Route::get('contact-messages/{contactMessage}', [ContactMessageController::class, 'show'])->name('contact-messages.show');
         Route::delete('contact-messages/{contactMessage}', [ContactMessageController::class, 'destroy'])->name('contact-messages.destroy');
@@ -95,7 +92,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::get('profile', [ProfileController::class, 'index'])->name('profile.index');
         Route::put('profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
-        Route::post('profile/users', [ProfileController::class, 'storeUser'])->name('profile.users.store');
-        Route::delete('profile/users/{user}', [ProfileController::class, 'destroyUser'])->name('profile.users.destroy');
+
+        // Réservé aux admins uniquement
+        Route::middleware('require.admin')->group(function () {
+            Route::get('settings', [SettingController::class, 'index'])->name('settings.index');
+            Route::put('settings', [SettingController::class, 'update'])->name('settings.update');
+            Route::post('profile/users', [ProfileController::class, 'storeUser'])->name('profile.users.store');
+            Route::delete('profile/users/{user}', [ProfileController::class, 'destroyUser'])->name('profile.users.destroy');
+        });
     });
 });

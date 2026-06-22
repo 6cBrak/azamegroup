@@ -87,9 +87,15 @@
                     </td>
                     <td class="px-4 py-3 text-gray-600">{{ $user->email }}</td>
                     <td class="px-4 py-3">
-                        <span class="bg-yellow-100 text-yellow-800 text-xs font-medium px-2 py-1 rounded-full">
-                            Administrateur
-                        </span>
+                        @if($user->role === 'admin')
+                            <span class="bg-indigo-100 text-indigo-800 text-xs font-medium px-2 py-1 rounded-full">
+                                <i class="fas fa-shield-alt mr-1"></i>Admin
+                            </span>
+                        @else
+                            <span class="bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full">
+                                <i class="fas fa-pencil-alt mr-1"></i>Éditeur
+                            </span>
+                        @endif
                     </td>
                     <td class="px-4 py-3 text-right">
                         @if($user->id !== auth()->id())
@@ -128,6 +134,16 @@
                 <input type="email" name="email" value="{{ old('email') }}"
                     class="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-400 @error('email') border-red-400 @enderror">
                 @error('email') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Rôle</label>
+                <select name="role"
+                    class="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-400 @error('role') border-red-400 @enderror">
+                    <option value="editeur" {{ old('role') === 'editeur' ? 'selected' : '' }}>Éditeur (produits, commandes, avis...)</option>
+                    <option value="admin"   {{ old('role') === 'admin'   ? 'selected' : '' }}>Admin (accès complet)</option>
+                </select>
+                @error('role') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
             </div>
 
             <div>

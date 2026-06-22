@@ -56,10 +56,12 @@
                     <span class="ml-auto bg-yellow-500 text-white text-xs rounded-full px-1.5 py-0.5 font-bold">{{ $pendingReviews }}</span>
                 @endif
             </a>
+            @if(auth()->user()->isAdmin())
             <a href="{{ route('admin.settings.index') }}"
                class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm {{ request()->routeIs('admin.settings.*') ? 'bg-indigo-600 text-white' : 'text-gray-300 hover:bg-gray-800' }}">
                 <i class="fas fa-cog w-4"></i> Paramètres
             </a>
+            @endif
             <a href="{{ route('admin.profile.index') }}"
                class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm {{ request()->routeIs('admin.profile.*') ? 'bg-indigo-600 text-white' : 'text-gray-300 hover:bg-gray-800' }}">
                 <i class="fas fa-user-cog w-4"></i> Mon profil

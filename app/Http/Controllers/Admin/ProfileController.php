@@ -38,12 +38,14 @@ class ProfileController extends Controller
         $request->validate([
             'name'     => ['required', 'string', 'max:255'],
             'email'    => ['required', 'email', 'unique:users,email'],
+            'role'     => ['required', 'in:admin,editeur'],
             'password' => ['required', 'confirmed', Password::min(8)->mixedCase()->numbers()],
         ]);
 
         User::create([
             'name'     => $request->name,
             'email'    => $request->email,
+            'role'     => $request->role,
             'password' => Hash::make($request->password),
         ]);
 
