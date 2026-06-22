@@ -99,6 +99,14 @@ class ProductController extends Controller
         return redirect()->route('admin.products.edit', $product);
     }
 
+    public function removeImage(Product $product, int $index)
+    {
+        $images = $product->images ?? [];
+        unset($images[$index]);
+        $product->update(['images' => array_values($images)]);
+        return back()->with('success', 'Image supprimée.');
+    }
+
     private function handleImages(Request $request): array
     {
         $paths = [];

@@ -1,5 +1,4 @@
 @extends('layouts.admin')
-
 @section('title', 'Modifier : ' . $product->name_fr)
 
 @section('content')
@@ -32,7 +31,7 @@
 
             <div class="grid sm:grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Prix (DA) *</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Prix (F CFA) *</label>
                     <input type="number" name="price" value="{{ old('price', $product->price) }}" required min="0" step="0.01"
                            class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
                 </div>
@@ -54,22 +53,46 @@
                           class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">{{ old('description_en', $product->description_en) }}</textarea>
             </div>
 
-            {{-- Current images --}}
+            {{-- Images existantes --}}
             @if($product->images && count($product->images) > 0)
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Images actuelles</label>
-                <div class="flex gap-2 flex-wrap">
-                    @foreach($product->images as $img)
-                        <img src="{{ $img }}" class="w-20 h-20 object-cover rounded-lg border">
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    Photos actuelles ({{ count($product->images) }})
+                </label>
+                <div class="flex gap-3 flex-wrap">
+                    @foreach($product->images as $i => $img)
+                    <div class="relative group">
+                        <img src="{{ $img }}" class="w-24 h-24 object-cover rounded-lg border border-gray-200">
+                        <form action="{{ route('admin.products.images.destroy', [$product, $i]) }}" method="POST"
+                              onsubmit="return confirm('Supprimer cette photo ?')"
+                              class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition bg-black/40 rounded-lg">
+                            @csrf @method('DELETE')
+                            <button type="submit" class="bg-red-600 text-white text-xs px-2 py-1 rounded-lg font-bold">
+                                <i class="fas fa-trash mr-1"></i>Supprimer
+                            </button>
+                        </form>
+                    </div>
                     @endforeach
                 </div>
             </div>
             @endif
 
+            {{-- Ajouter de nouvelles photos --}}
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Ajouter des images</label>
-                <input type="file" name="images[]" multiple accept="image/*"
-                       class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    Ajouter des photos
+                    <span class="text-gray-400 font-normal">(recommandé : minimum 3 photos)</span>
+                </label>
+                <div class="border-2 border-dashed border-gray-300 rounded-xl p-4 text-center hover:border-indigo-400 transition cursor-pointer"
+                     onclick="document.getElementById('imageInput').click()">
+                    <i class="fas fa-cloud-upload-alt text-3xl text-gray-300 mb-2"></i>
+                    <p class="text-sm text-gray-500">Cliquez pour sélectionner des photos</p>
+                    <p class="text-xs text-gray-400 mt-1">JPG, PNG, WEBP — max 2 Mo chacune</p>
+                    <input type="file" id="imageInput" name="images[]" multiple accept="image/*" class="hidden" onchange="previewImages(this)">
+                </div>
+
+                {{-- Prévisualisation --}}
+                <div id="imagePreview" class="flex gap-3 flex-wrap mt-3"></div>
             </div>
 
             <div class="flex items-center gap-6">
@@ -95,4 +118,22 @@
         </form>
     </div>
 </div>
+
+<script>
+function previewImages(input) {
+    const preview = document.getElementById('imagePreview');
+    preview.innerHTML = '';
+    Array.from(input.files).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = e => {
+            const div = document.createElement('div');
+            div.className = 'relative';
+            div.innerHTML = `<img src="${e.target.result}" class="w-24 h-24 object-cover rounded-lg border border-indigo-300">
+                             <span class="absolute -top-1 -right-1 bg-indigo-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">✓</span>`;
+            preview.appendChild(div);
+        };
+        reader.readAsDataURL(file);
+    });
+}
+</script>
 @endsection

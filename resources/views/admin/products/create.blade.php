@@ -57,10 +57,18 @@
             </div>
 
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Images</label>
-                <input type="file" name="images[]" multiple accept="image/*"
-                       class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
-                <p class="text-xs text-gray-400 mt-1">Plusieurs images acceptées (max 2Mo chacune)</p>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    Photos
+                    <span class="text-gray-400 font-normal">(recommandé : minimum 3 photos)</span>
+                </label>
+                <div class="border-2 border-dashed border-gray-300 rounded-xl p-4 text-center hover:border-indigo-400 transition cursor-pointer"
+                     onclick="document.getElementById('imageInput').click()">
+                    <i class="fas fa-cloud-upload-alt text-3xl text-gray-300 mb-2"></i>
+                    <p class="text-sm text-gray-500">Cliquez pour sélectionner des photos</p>
+                    <p class="text-xs text-gray-400 mt-1">JPG, PNG, WEBP — max 2 Mo chacune</p>
+                    <input type="file" id="imageInput" name="images[]" multiple accept="image/*" class="hidden" onchange="previewImages(this)">
+                </div>
+                <div id="imagePreview" class="flex gap-3 flex-wrap mt-3"></div>
             </div>
 
             <div class="flex items-center gap-6">
@@ -86,4 +94,22 @@
         </form>
     </div>
 </div>
+
+<script>
+function previewImages(input) {
+    const preview = document.getElementById('imagePreview');
+    preview.innerHTML = '';
+    Array.from(input.files).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = e => {
+            const div = document.createElement('div');
+            div.className = 'relative';
+            div.innerHTML = `<img src="${e.target.result}" class="w-24 h-24 object-cover rounded-lg border border-indigo-300">
+                             <span class="absolute -top-1 -right-1 bg-indigo-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">✓</span>`;
+            preview.appendChild(div);
+        };
+        reader.readAsDataURL(file);
+    });
+}
+</script>
 @endsection

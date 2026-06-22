@@ -90,6 +90,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::patch('reviews/{review}/approve', [AdminReviewController::class, 'approve'])->name('reviews.approve');
         Route::delete('reviews/{review}', [AdminReviewController::class, 'destroy'])->name('reviews.destroy');
 
+        Route::delete('products/{product}/images/{index}', [ProductController::class, 'removeImage'])->name('products.images.destroy');
         Route::get('profile', [ProfileController::class, 'index'])->name('profile.index');
         Route::put('profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
 
