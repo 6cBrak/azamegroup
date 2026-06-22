@@ -60,6 +60,10 @@
                class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm {{ request()->routeIs('admin.settings.*') ? 'bg-indigo-600 text-white' : 'text-gray-300 hover:bg-gray-800' }}">
                 <i class="fas fa-cog w-4"></i> Paramètres
             </a>
+            <a href="{{ route('admin.profile.index') }}"
+               class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm {{ request()->routeIs('admin.profile.*') ? 'bg-indigo-600 text-white' : 'text-gray-300 hover:bg-gray-800' }}">
+                <i class="fas fa-user-cog w-4"></i> Mon profil
+            </a>
             <hr class="border-gray-700 my-3">
             <a href="{{ route('home') }}" target="_blank"
                class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-300 hover:bg-gray-800">

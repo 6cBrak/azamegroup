@@ -19,6 +19,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ReviewController as AdminReviewController;
+use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\SettingController;
 use Illuminate\Support\Facades\Route;
 
@@ -91,5 +92,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('reviews', [AdminReviewController::class, 'index'])->name('reviews.index');
         Route::patch('reviews/{review}/approve', [AdminReviewController::class, 'approve'])->name('reviews.approve');
         Route::delete('reviews/{review}', [AdminReviewController::class, 'destroy'])->name('reviews.destroy');
+
+        Route::get('profile', [ProfileController::class, 'index'])->name('profile.index');
+        Route::put('profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+        Route::post('profile/users', [ProfileController::class, 'storeUser'])->name('profile.users.store');
+        Route::delete('profile/users/{user}', [ProfileController::class, 'destroyUser'])->name('profile.users.destroy');
     });
 });
