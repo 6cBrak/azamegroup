@@ -13,7 +13,11 @@ class ProfileController extends Controller
 {
     public function index()
     {
-        $users = User::orderBy('name')->get();
+        $authUser = Auth::user();
+        // Editeurs can only see themselves, not other admin accounts
+        $users = $authUser->isAdmin()
+            ? User::orderBy('name')->get()
+            : collect([$authUser]);
         return view('admin.profile.index', compact('users'));
     }
 

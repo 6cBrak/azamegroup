@@ -83,14 +83,16 @@ class DatabaseSeeder extends Seeder
         Setting::setMany($settings);
 
         // ─── Admin ───────────────────────────────────────────────────────
-        User::firstOrCreate(
-            ['email' => 'admin@azamgroupe.com'],
-            [
+        // Mot de passe à changer impérativement après le premier déploiement
+        if (!User::where('email', 'admin@azamgroupe.com')->exists()) {
+            $generatedPassword = env('ADMIN_INITIAL_PASSWORD', Str::random(16));
+            User::create([
                 'name'     => 'Abubakar BOLY',
                 'email'    => 'admin@azamgroupe.com',
-                'password' => Hash::make('Admin@2024'),
-            ]
-        );
+                'password' => Hash::make($generatedPassword),
+            ]);
+            logger()->info("Admin créé — mot de passe initial : {$generatedPassword}");
+        }
 
         // ─── Désactiver les anciennes catégories démo ────────────────────
         Category::whereIn('slug', ['electronique','vetements','maison','sports','beaute','alimentation','maison-lifestyle'])

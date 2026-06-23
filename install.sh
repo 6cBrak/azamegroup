@@ -176,7 +176,7 @@ echo "  ╠═══════════════════════
 echo "  ║  Site    : https://${DOMAIN}"
 echo "  ║  Admin   : https://${DOMAIN}/admin"
 echo "  ║  Email   : admin@azamgroupe.com"
-echo "  ║  MDP     : Admin@2024  ← CHANGER MAINTENANT !"
+echo "  ║  MDP     : docker compose logs app | grep "mot de passe""
 echo "  ╠════════════════════════════════════════════════════╣"
 echo "  ║  Containers actifs :"
 echo "  ║    azam_app    — PHP 8.2-FPM (Laravel)"

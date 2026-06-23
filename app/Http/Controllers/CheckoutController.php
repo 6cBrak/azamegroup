@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\Product;
 use App\Models\Setting;
 use Illuminate\Http\Request;
 
@@ -36,7 +37,31 @@ class CheckoutController extends Controller
             return redirect()->route('cart.index');
         }
 
-        $total = collect($cart)->sum(fn($item) => $item['price'] * $item['quantity']);
+        // Re-read prices from DB — never trust session-stored prices
+        $productIds = array_column(array_values($cart), 'id');
+        $dbPrices = Product::whereIn('id', $productIds)->pluck('price', 'id');
+
+        $resolvedItems = [];
+        $total = 0;
+        foreach ($cart as $item) {
+            $dbPrice = $dbPrices[$item['id']] ?? null;
+            if ($dbPrice === null) {
+                continue; // product removed or inactive
+            }
+            $subtotal = $dbPrice * $item['quantity'];
+            $total += $subtotal;
+            $resolvedItems[] = [
+                'product_id'   => $item['id'],
+                'product_name' => $item['name'],
+                'unit_price'   => $dbPrice,
+                'quantity'     => $item['quantity'],
+                'subtotal'     => $subtotal,
+            ];
+        }
+
+        if (empty($resolvedItems)) {
+            return redirect()->route('cart.index');
+        }
 
         $order = Order::create([
             'reference'       => Order::generateReference(),
@@ -51,20 +76,13 @@ class CheckoutController extends Controller
             'status'          => 'pending',
         ]);
 
-        foreach ($cart as $item) {
-            OrderItem::create([
-                'order_id'     => $order->id,
-                'product_id'   => $item['id'],
-                'product_name' => $item['name'],
-                'unit_price'   => $item['price'],
-                'quantity'     => $item['quantity'],
-                'subtotal'     => $item['price'] * $item['quantity'],
-            ]);
+        foreach ($resolvedItems as $item) {
+            OrderItem::create(array_merge(['order_id' => $order->id], $item));
         }
 
         session()->forget('cart');
 
-        $whatsappMessage = $this->buildWhatsAppMessage($order, $cart);
+        $whatsappMessage = $this->buildWhatsAppMessage($order, $resolvedItems);
         $whatsappNumber = Setting::get('whatsapp_number', config('app.whatsapp_number'));
         $whatsappUrl = 'https://wa.me/' . preg_replace('/[^0-9]/', '', $whatsappNumber)
             . '?text=' . urlencode($whatsappMessage);
@@ -84,10 +102,11 @@ class CheckoutController extends Controller
         $lines[] = "";
         $lines[] = "--- Articles ---";
         foreach ($cart as $item) {
-            $lines[] = "• {$item['name']} x{$item['quantity']} = " . number_format($item['price'] * $item['quantity'], 2) . " DA";
+            $name = $item['product_name'] ?? $item['name'];
+            $lines[] = "• {$name} x{$item['quantity']} = " . number_format($item['subtotal'], 2) . " F CFA";
         }
         $lines[] = "";
-        $lines[] = "TOTAL: " . number_format($order->total, 2) . " DA";
+        $lines[] = "TOTAL: " . number_format($order->total, 2) . " F CFA";
 
         return implode("\n", $lines);
     }
