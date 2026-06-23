@@ -83,7 +83,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('categories', CategoryController::class)->names('categories');
         Route::get('orders/export', [OrderController::class, 'export'])->name('orders.export');
         Route::resource('orders', OrderController::class)->names('orders')->only(['index', 'show', 'update', 'destroy']);
-        Route::resource('customers', CustomerController::class)->names('customers')->only(['index', 'show', 'destroy']);
+        Route::resource('customers', CustomerController::class)->names('customers')->only(['index', 'show']);
+
 
         Route::get('contact-messages', [ContactMessageController::class, 'index'])->name('contact-messages.index');
         Route::get('contact-messages/{contactMessage}', [ContactMessageController::class, 'show'])->name('contact-messages.show');
@@ -103,6 +104,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::put('settings', [SettingController::class, 'update'])->name('settings.update');
             Route::post('profile/users', [ProfileController::class, 'storeUser'])->name('profile.users.store');
             Route::delete('profile/users/{user}', [ProfileController::class, 'destroyUser'])->name('profile.users.destroy');
+            Route::delete('customers/{customer}', [CustomerController::class, 'destroy'])->name('customers.destroy');
         });
     });
 });
