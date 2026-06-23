@@ -34,6 +34,7 @@ class SettingController extends Controller
             'about_en'             => 'nullable|string|max:5000',
             'google_verification'  => 'nullable|string|max:200',
             'bing_verification'    => 'nullable|string|max:200',
+            'tawk_property_id'     => 'nullable|string|max:200',
             // Présentation
             'company_slogan'       => 'nullable|string|max:300',
             'company_slogan_en'    => 'nullable|string|max:300',
@@ -110,6 +111,7 @@ class SettingController extends Controller
             'value3_title', 'value3_title_en', 'value3_text', 'value3_text_en',
             'value4_title', 'value4_title_en', 'value4_text', 'value4_text_en',
             'google_verification', 'bing_verification',
+            'tawk_property_id',
         ];
 
         foreach ($keys as $key) {

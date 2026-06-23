@@ -491,6 +491,41 @@
             </div>
         </div>
 
+        {{-- ══════════════════════════════════════════ --}}
+        {{-- 10. CHAT EN DIRECT (TAWK.TO)              --}}
+        {{-- ══════════════════════════════════════════ --}}
+        <div class="bg-white rounded-xl shadow p-6">
+            <h2 class="font-bold text-gray-700 text-lg mb-2 flex items-center gap-2">
+                <i class="fas fa-comments text-green-500"></i> Chat en direct (Tawk.to)
+            </h2>
+            <p class="text-sm text-gray-500 mb-4">
+                Ajoute un widget de chat gratuit sur toutes les pages du site.
+                Crée un compte sur <strong>tawk.to</strong>, puis va dans
+                <em>Administration → Canaux → Widget de chat → Intégrer</em>
+                et copie uniquement la partie après <code class="bg-gray-100 px-1 rounded">embed.tawk.to/</code>.
+            </p>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                    Identifiant Tawk.to
+                </label>
+                <div class="flex items-center gap-2">
+                    <span class="text-sm text-gray-400 whitespace-nowrap">embed.tawk.to/</span>
+                    <input type="text" name="tawk_property_id" value="{{ $settings['tawk_property_id'] ?? '' }}"
+                           placeholder="680abc123456789/1iabcdefg"
+                           class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <p class="text-xs text-gray-400 mt-1">
+                    Exemple : <code class="bg-gray-100 px-1 rounded">680abc123456789/1iabcdefg</code>
+                    — Laisser vide pour désactiver le chat.
+                </p>
+                @if(!empty($settings['tawk_property_id'] ?? ''))
+                <p class="text-xs text-green-600 mt-2 flex items-center gap-1">
+                    <i class="fas fa-check-circle"></i> Chat actif sur le site
+                </p>
+                @endif
+            </div>
+        </div>
+
         <div class="flex justify-end pb-8">
             <button type="submit"
                     class="bg-indigo-600 text-white font-bold px-10 py-3 rounded-xl hover:bg-indigo-700 transition flex items-center gap-2 text-base">

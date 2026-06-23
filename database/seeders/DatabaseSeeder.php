@@ -89,9 +89,13 @@ class DatabaseSeeder extends Seeder
             User::create([
                 'name'     => 'Abubakar BOLY',
                 'email'    => 'admin@azamgroupe.com',
+                'role'     => 'admin',
                 'password' => Hash::make($generatedPassword),
             ]);
             logger()->info("Admin créé — mot de passe initial : {$generatedPassword}");
+        } else {
+            // S'assurer que le compte admin a bien le rôle admin
+            User::where('email', 'admin@azamgroupe.com')->update(['role' => 'admin']);
         }
 
         // ─── Désactiver les anciennes catégories démo ────────────────────
