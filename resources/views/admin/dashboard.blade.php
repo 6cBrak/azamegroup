@@ -20,7 +20,7 @@
     </div>
     <div class="bg-white rounded-xl shadow p-4 text-center">
         <p class="text-2xl font-bold text-green-600">{{ number_format($stats['revenue'], 0) }}</p>
-        <p class="text-xs text-gray-500 mt-1">CA (DA)</p>
+        <p class="text-xs text-gray-500 mt-1">CA (F CFA)</p>
     </div>
     <div class="bg-white rounded-xl shadow p-4 text-center">
         <p class="text-3xl font-bold text-yellow-500">{{ $stats['pending'] }}</p>

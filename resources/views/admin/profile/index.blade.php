@@ -5,7 +5,9 @@
 <div class="max-w-4xl mx-auto space-y-8">
 
     {{-- Titre --}}
-    <h1 class="text-2xl font-bold text-gray-800">Mon profil & Utilisateurs</h1>
+    <h1 class="text-2xl font-bold text-gray-800">
+        @if(auth()->user()->isAdmin()) Mon profil &amp; Utilisateurs @else Mon profil @endif
+    </h1>
 
     {{-- Alertes --}}
     @if(session('success_password'))
@@ -114,7 +116,8 @@
             </tbody>
         </table>
 
-        {{-- Ajouter un utilisateur --}}
+        {{-- Ajouter un utilisateur (admin seulement) --}}
+        @if(auth()->user()->isAdmin())
         <h3 class="text-sm font-semibold text-gray-600 mb-3 border-t pt-4">
             <i class="fas fa-user-plus mr-1 text-green-500"></i>Ajouter un administrateur
         </h3>
@@ -166,6 +169,7 @@
                 </button>
             </div>
         </form>
+        @endif
     </div>
 
 </div>

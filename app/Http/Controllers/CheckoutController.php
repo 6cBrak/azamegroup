@@ -16,6 +16,17 @@ class CheckoutController extends Controller
         if (empty($cart)) {
             return redirect()->route('cart.index');
         }
+
+        // Sync displayed prices with DB so what the user sees matches what will be charged
+        $productIds = array_column(array_values($cart), 'id');
+        $dbPrices = Product::whereIn('id', $productIds)->pluck('price', 'id');
+        $cart = collect($cart)->map(function ($item) use ($dbPrices) {
+            if (isset($dbPrices[$item['id']])) {
+                $item['price'] = $dbPrices[$item['id']];
+            }
+            return $item;
+        })->all();
+
         $total = collect($cart)->sum(fn($item) => $item['price'] * $item['quantity']);
         $customer = auth('customer')->user();
         return view('checkout.index', compact('cart', 'total', 'customer'));
