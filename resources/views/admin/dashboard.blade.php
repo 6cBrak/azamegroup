@@ -5,7 +5,7 @@
 @section('content')
 
 {{-- Stats cards --}}
-<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-8">
     <div class="bg-white rounded-xl shadow p-4 text-center">
         <p class="text-3xl font-bold text-indigo-600">{{ $stats['products'] }}</p>
         <p class="text-xs text-gray-500 mt-1">Produits</p>
@@ -19,6 +19,12 @@
         <p class="text-xs text-gray-500 mt-1">Commandes</p>
     </div>
     <div class="bg-white rounded-xl shadow p-4 text-center">
+        <a href="{{ route('admin.customers.index') }}" class="block">
+            <p class="text-3xl font-bold text-teal-600">{{ $stats['customers'] }}</p>
+            <p class="text-xs text-gray-500 mt-1">Clients</p>
+        </a>
+    </div>
+    <div class="bg-white rounded-xl shadow p-4 text-center col-span-2 md:col-span-1">
         <p class="text-2xl font-bold text-green-600">{{ number_format($stats['revenue'], 0) }}</p>
         <p class="text-xs text-gray-500 mt-1">CA (F CFA)</p>
     </div>

@@ -5,7 +5,7 @@
 @section('content')
 
 {{-- Filters --}}
-<form method="GET" class="bg-white rounded-xl shadow p-4 mb-5 flex flex-wrap gap-3">
+<form method="GET" class="bg-white rounded-xl shadow p-4 mb-5 flex flex-wrap gap-3 items-center">
     <input type="text" name="search" value="{{ request('search') }}" placeholder="Réf, nom, téléphone..."
            class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 flex-1 min-w-48">
     <select name="status" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
@@ -18,6 +18,12 @@
     </select>
     <button type="submit" class="bg-gray-700 text-white px-4 py-2 rounded-lg text-sm hover:bg-gray-800">Filtrer</button>
     <a href="{{ route('admin.orders.index') }}" class="border border-gray-300 px-4 py-2 rounded-lg text-sm hover:bg-gray-50">Réinitialiser</a>
+
+    {{-- Export CSV (reprend les filtres actifs) --}}
+    <a href="{{ route('admin.orders.export', request()->only('search', 'status')) }}"
+       class="ml-auto flex items-center gap-1.5 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
+        <i class="fas fa-file-csv"></i> Exporter CSV
+    </a>
 </form>
 
 <div class="bg-white rounded-xl shadow overflow-hidden">

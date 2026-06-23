@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ContactMessageController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ReviewController as AdminReviewController;
@@ -80,7 +81,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
         Route::resource('products', ProductController::class)->names('products');
         Route::resource('categories', CategoryController::class)->names('categories');
+        Route::get('orders/export', [OrderController::class, 'export'])->name('orders.export');
         Route::resource('orders', OrderController::class)->names('orders')->only(['index', 'show', 'update', 'destroy']);
+        Route::resource('customers', CustomerController::class)->names('customers')->only(['index', 'show', 'destroy']);
 
         Route::get('contact-messages', [ContactMessageController::class, 'index'])->name('contact-messages.index');
         Route::get('contact-messages/{contactMessage}', [ContactMessageController::class, 'show'])->name('contact-messages.show');

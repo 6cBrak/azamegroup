@@ -40,6 +40,10 @@
                class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm {{ request()->routeIs('admin.orders.*') ? 'bg-indigo-600 text-white' : 'text-gray-300 hover:bg-gray-800' }}">
                 <i class="fas fa-shopping-bag w-4"></i> Commandes
             </a>
+            <a href="{{ route('admin.customers.index') }}"
+               class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm {{ request()->routeIs('admin.customers.*') ? 'bg-indigo-600 text-white' : 'text-gray-300 hover:bg-gray-800' }}">
+                <i class="fas fa-users w-4"></i> Clients
+            </a>
             <a href="{{ route('admin.contact-messages.index') }}"
                class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm {{ request()->routeIs('admin.contact-messages.*') ? 'bg-indigo-600 text-white' : 'text-gray-300 hover:bg-gray-800' }}">
                 <i class="fas fa-envelope w-4"></i> Messages
