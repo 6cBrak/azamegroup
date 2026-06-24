@@ -16,8 +16,8 @@
         {{-- Badges --}}
         <div class="absolute top-2 left-2 flex flex-col gap-1">
             @if($product->featured)
-                <span class="inline-flex items-center gap-1 bg-yellow-400 text-yellow-900 text-xs font-bold px-2 py-1 rounded-full shadow">
-                    <i class="fas fa-star text-yellow-700 text-[10px]"></i> Vedette
+                <span class="inline-flex items-center gap-1 bg-yellow-400 text-white text-xs font-bold px-2 py-1 rounded-full shadow">
+                    <i class="fas fa-star text-white text-[10px]"></i> Vedette
                 </span>
             @endif
         </div>
@@ -57,7 +57,7 @@
                     @csrf
                     <input type="hidden" name="quantity" value="1">
                     <button type="submit"
-                            class="bg-amber-400 hover:bg-amber-500 text-gray-900 font-bold text-sm px-3 py-2 rounded-xl transition-colors duration-200 flex items-center gap-1.5 shadow-sm">
+                            class="bg-amber-400 hover:bg-amber-500 text-white font-bold text-sm px-3 py-2 rounded-xl transition-colors duration-200 flex items-center gap-1.5 shadow-sm">
                         <i class="fas fa-cart-plus"></i>
                         <span class="hidden sm:inline text-xs">Ajouter</span>
                     </button>

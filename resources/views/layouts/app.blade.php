@@ -82,23 +82,23 @@
     @stack('schema')
 
     <script src="https://cdn.tailwindcss.com"></script>
-    {{-- Palette jaune or + noir --}}
+    {{-- Palette orange #F57C00 --}}
     <script>
     tailwind.config = {
         theme: {
             extend: {
                 colors: {
                     brand: {
-                        50:  '#fffbeb',
-                        100: '#fef3c7',
-                        200: '#fde68a',
-                        300: '#fcd34d',
-                        400: '#fbbf24',
-                        500: '#f59e0b',
-                        600: '#d97706',
-                        700: '#b45309',
-                        800: '#92400e',
-                        900: '#78350f',
+                        50:  '#fff3e0',
+                        100: '#ffe0b2',
+                        200: '#ffcc80',
+                        300: '#ffb74d',
+                        400: '#ffa726',
+                        500: '#ff9800',
+                        600: '#fb8c00',
+                        700: '#f57c00',
+                        800: '#ef6c00',
+                        900: '#e65100',
                     }
                 }
             }
@@ -108,33 +108,46 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         :root {
-            --gold:      #fbbf24;
-            --gold-dark: #d97706;
+            --gold:      #F57C00;
+            --gold-dark: #E65100;
             --black:     #111111;
         }
-        /* Remplacement global indigo → or */
+        /* Remplacement global indigo → orange */
         .bg-indigo-600, .bg-indigo-500  { background-color: var(--gold-dark) !important; }
-        .bg-indigo-700  { background-color: #b45309 !important; }
-        .bg-indigo-50   { background-color: #fffbeb !important; }
-        .bg-indigo-100  { background-color: #fef3c7 !important; }
+        .bg-indigo-700  { background-color: #BF360C !important; }
+        .bg-indigo-50   { background-color: #fff3e0 !important; }
+        .bg-indigo-100  { background-color: #ffe0b2 !important; }
         .text-indigo-600, .text-indigo-500 { color: var(--gold-dark) !important; }
-        .text-indigo-700 { color: #b45309 !important; }
+        .text-indigo-700 { color: #BF360C !important; }
         .text-indigo-400 { color: var(--gold) !important; }
-        .text-indigo-200 { color: #fde68a !important; }
-        .hover\:bg-indigo-700:hover { background-color: #b45309 !important; }
+        .text-indigo-200 { color: #ffcc80 !important; }
+        .hover\:bg-indigo-700:hover { background-color: #BF360C !important; }
         .hover\:bg-indigo-600:hover { background-color: var(--gold-dark) !important; }
-        .hover\:bg-indigo-50:hover  { background-color: #fffbeb !important; }
+        .hover\:bg-indigo-50:hover  { background-color: #fff3e0 !important; }
         .hover\:text-indigo-600:hover { color: var(--gold-dark) !important; }
-        .hover\:text-indigo-700:hover { color: #b45309 !important; }
+        .hover\:text-indigo-700:hover { color: #BF360C !important; }
         .focus\:ring-indigo-500:focus { --tw-ring-color: var(--gold) !important; }
         .border-indigo-500, .border-indigo-600 { border-color: var(--gold) !important; }
         .hover\:border-indigo-500:hover { border-color: var(--gold) !important; }
         .ring-indigo-500 { --tw-ring-color: var(--gold) !important; }
-        .hover\:text-indigo-800:hover { color: #92400e !important; }
-        /* Boutons or (texte noir pour le contraste) */
+        .hover\:text-indigo-800:hover { color: #BF360C !important; }
+        /* Remplacement global yellow → orange (navbar, boutons) */
+        .text-yellow-400, .text-yellow-500 { color: var(--gold) !important; }
+        .hover\:text-yellow-400:hover { color: var(--gold) !important; }
+        .bg-yellow-400, .bg-yellow-500  { background-color: var(--gold) !important; }
+        .hover\:bg-yellow-400:hover { background-color: var(--gold-dark) !important; }
+        .border-yellow-400 { border-color: var(--gold) !important; }
+        .hover\:border-yellow-400:hover { border-color: var(--gold) !important; }
+        .ring-yellow-400, .focus\:ring-yellow-400:focus { --tw-ring-color: var(--gold) !important; }
+        /* Remplacement global amber → orange (product cards) */
+        .text-amber-400, .text-amber-500, .text-amber-600 { color: var(--gold) !important; }
+        .hover\:text-amber-600:hover { color: var(--gold-dark) !important; }
+        .bg-amber-400, .bg-amber-500 { background-color: var(--gold) !important; }
+        .hover\:bg-amber-500:hover { background-color: var(--gold-dark) !important; }
+        /* Boutons orange */
         .btn-gold {
             background-color: var(--gold);
-            color: #111111;
+            color: #ffffff;
             font-weight: 700;
             transition: background-color .2s;
         }
