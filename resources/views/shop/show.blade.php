@@ -120,10 +120,35 @@
                     <input type="number" name="quantity" value="1" min="1" max="{{ $product->stock }}"
                            class="w-20 border border-gray-300 rounded-lg px-3 py-2 text-center focus:outline-none focus:ring-2 focus:ring-amber-400">
                     <button type="submit"
-                            class="flex-1 bg-amber-400 hover:bg-amber-500 text-gray-900 font-bold py-3 rounded-xl transition-colors text-center shadow-sm">
+                            class="flex-1 bg-amber-400 hover:bg-amber-500 text-white font-bold py-3 rounded-xl transition-colors text-center shadow-sm">
                         <i class="fas fa-cart-plus mr-2"></i> {{ __('app.add_to_cart') }}
                     </button>
                 </form>
+
+                {{-- Partage --}}
+                <div class="flex items-center gap-2 mt-2">
+                    <span class="text-sm text-gray-400 mr-1">Partager :</span>
+
+                    {{-- WhatsApp --}}
+                    <a href="https://wa.me/?text={{ urlencode($product->getName() . ' — ' . number_format($product->price, 0, ',', ' ') . ' F CFA' . "\n" . url()->current()) }}"
+                       target="_blank" rel="noopener"
+                       class="flex items-center gap-1.5 bg-green-500 hover:bg-green-600 text-white text-sm font-medium px-3 py-2 rounded-lg transition">
+                        <i class="fab fa-whatsapp"></i> WhatsApp
+                    </a>
+
+                    {{-- Facebook --}}
+                    <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(url()->current()) }}"
+                       target="_blank" rel="noopener"
+                       class="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-3 py-2 rounded-lg transition">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+
+                    {{-- Copier le lien --}}
+                    <button onclick="copyLink()" id="copyBtn"
+                            class="flex items-center gap-1.5 border border-gray-300 hover:bg-gray-50 text-gray-600 text-sm font-medium px-3 py-2 rounded-lg transition">
+                        <i class="fas fa-link"></i> <span id="copyLabel">Copier</span>
+                    </button>
+                </div>
             @else
                 <p class="text-red-500 font-medium mb-4">
                     <i class="fas fa-times-circle"></i> {{ __('app.out_of_stock') }}
@@ -272,6 +297,19 @@ function closeLightbox() {
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') closeLightbox();
 });
+
+// Copy link
+function copyLink() {
+    navigator.clipboard.writeText(window.location.href).then(function() {
+        const label = document.getElementById('copyLabel');
+        label.textContent = 'Copié !';
+        document.getElementById('copyBtn').classList.add('border-green-400', 'text-green-600');
+        setTimeout(function() {
+            label.textContent = 'Copier';
+            document.getElementById('copyBtn').classList.remove('border-green-400', 'text-green-600');
+        }, 2000);
+    });
+}
 
 // Star rating picker
 (function() {
