@@ -27,5 +27,8 @@ RUN composer dump-autoload --optimize --no-dev
 RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache \
     && chmod -R 775 /var/www/storage /var/www/bootstrap/cache
 
+# PHP upload config
+COPY docker/php/uploads.ini /usr/local/etc/php/conf.d/uploads.ini
+
 EXPOSE 9000
 CMD ["php-fpm"]
